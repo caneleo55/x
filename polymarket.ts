@@ -18,6 +18,8 @@ export interface Trade {
   transactionHash: string;
   name?: string;
   pseudonym?: string;
+  outcome?: string;
+  outcomeIndex?: number;
   usdValue?: number;
   marketUrl?: string;
 }

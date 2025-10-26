@@ -18,7 +18,7 @@ const twitter = client.readWrite;
 
 export async function postInsiderTrade(trade: Trade): Promise<void> {
   try {
-    const amount = trade.usdValue?.toFixed(0) || "0";
+    const amount = trade.usdValue?.toLocaleString('en-US', { maximumFractionDigits: 0 }) || "0";
 
     // Use username if available and looks real, otherwise fallback to wallet
     let profileIdentifier = trade.proxyWallet; // Default to wallet
@@ -29,9 +29,12 @@ export async function postInsiderTrade(trade: Trade): Promise<void> {
 
     const profileUrl = `https://polymarket.com/@${profileIdentifier}?via=${REFERRAL}`;
 
+    // Get outcome (YES/NO) if available
+    const outcome = trade.outcome ? ` on ${trade.outcome.toUpperCase()}` : '';
+
     const tweet = `🚨 FRESH WALLET ALERT
 
-💰 $${amount} bet
+💰 $${amount} bet${outcome}
 📊 ${trade.title}
 
 First-time trader detected!
@@ -47,7 +50,7 @@ First-time trader detected!
 
 export async function postWhaleAlert(trade: Trade): Promise<void> {
   try {
-    const amount = trade.usdValue?.toFixed(0) || "0";
+    const amount = trade.usdValue?.toLocaleString('en-US', { maximumFractionDigits: 0 }) || "0";
 
     // Use username if available and looks real, otherwise fallback to wallet
     let profileIdentifier = trade.proxyWallet; // Default to wallet
@@ -58,9 +61,12 @@ export async function postWhaleAlert(trade: Trade): Promise<void> {
 
     const profileUrl = `https://polymarket.com/@${profileIdentifier}?via=${REFERRAL}`;
 
+    // Get outcome (YES/NO) if available
+    const outcome = trade.outcome ? ` on ${trade.outcome.toUpperCase()}` : '';
+
     const tweet = `🐋 WHALE ALERT
 
-💰 $${amount} bet
+💰 $${amount} bet${outcome}
 📊 ${trade.title}
 
 Big money moving!
