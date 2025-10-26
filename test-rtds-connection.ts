@@ -58,16 +58,11 @@ const onStatusChange = (status: string) => {
   console.log(`🔌 Status: ${status}`);
 };
 
-const onError = (error: any) => {
-  console.error("❌ Error:", error);
-};
-
 // Initialize client
 const wsClient = new RealTimeDataClient({
   onMessage,
   onConnect,
   onStatusChange,
-  onError,
   autoReconnect: false
 });
 
