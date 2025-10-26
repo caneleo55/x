@@ -19,7 +19,7 @@ const twitter = client.readWrite;
 export async function postInsiderTrade(trade: Trade): Promise<void> {
   try {
     const amount = trade.usdValue?.toFixed(0) || "0";
-    const profileUrl = `https://polymarket.com/profile/${trade.proxyWallet}?via=${REFERRAL}`;
+    const referralUrl = `https://polymarket.com/?via=${REFERRAL}`;
 
     const tweet = `🚨 FRESH WALLET ALERT
 
@@ -28,7 +28,7 @@ export async function postInsiderTrade(trade: Trade): Promise<void> {
 
 First-time trader detected!
 
-👤 ${profileUrl}`;
+👤 ${referralUrl}`;
 
     await twitter.v2.tweet(tweet);
     logger.info(`✅ Posted insider tweet: $${amount}`);
@@ -40,7 +40,7 @@ First-time trader detected!
 export async function postWhaleAlert(trade: Trade): Promise<void> {
   try {
     const amount = trade.usdValue?.toFixed(0) || "0";
-    const profileUrl = `https://polymarket.com/profile/${trade.proxyWallet}?via=${REFERRAL}`;
+    const referralUrl = `https://polymarket.com/?via=${REFERRAL}`;
 
     const tweet = `🐋 WHALE ALERT
 
@@ -49,7 +49,7 @@ export async function postWhaleAlert(trade: Trade): Promise<void> {
 
 Big money moving!
 
-👤 ${profileUrl}`;
+👤 ${referralUrl}`;
 
     await twitter.v2.tweet(tweet);
     logger.info(`✅ Posted whale tweet: $${amount}`);
