@@ -18,31 +18,25 @@ const twitter = client.readWrite;
 
 export async function postInsiderTrade(trade: Trade): Promise<void> {
   try {
-    const amount = trade.usdValue?.toLocaleString('en-US', { maximumFractionDigits: 0 }) || "0";
+    const amount = trade.usdValue?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || "0.00";
+    const price = (trade.price * 100).toFixed(0); // Convert to cents
 
-    // Use username if available and looks real, otherwise fallback to wallet
-    let profileIdentifier = trade.proxyWallet; // Default to wallet
+    // Get outcome emoji
+    const outcomeEmoji = trade.outcome?.toLowerCase() === 'yes' ? '✅' : '❌';
+    const outcomeName = trade.outcome || 'Unknown';
 
-    if (trade.name && !trade.name.startsWith('0x') && trade.name.length < 40 && trade.name.length > 0) {
-      profileIdentifier = trade.name;
-    }
+    // Profile URL with wallet address
+    const profileUrl = `https://polymarket.com/profile/${trade.proxyWallet}?ref=${REFERRAL}`;
 
-    const profileUrl = `https://polymarket.com/@${profileIdentifier}?via=${REFERRAL}`;
+    const tweet = `👀 Fresh wallet just placed their FIRST bet on @Polymarket!
 
-    // Get outcome (YES/NO) if available
-    const outcome = trade.outcome ? ` on ${trade.outcome.toUpperCase()}` : '';
+💰 $${amount} on ${outcomeEmoji} ${outcomeName} @ ${price}¢
+📊 Market: ${trade.title}
 
-    const tweet = `🚨 FRESH WALLET ALERT
-
-💰 $${amount} bet${outcome}
-📊 ${trade.title}
-
-First-time trader detected!
-
-👤 ${profileUrl}`;
+🔗 ${profileUrl}`;
 
     await twitter.v2.tweet(tweet);
-    logger.info(`✅ Posted insider tweet: $${amount} - Profile: @${profileIdentifier}`);
+    logger.info(`✅ Posted insider tweet: $${amount} on ${outcomeName}`);
   } catch (err: any) {
     logger.error("Failed to post insider tweet:", err.message);
   }
@@ -50,31 +44,25 @@ First-time trader detected!
 
 export async function postWhaleAlert(trade: Trade): Promise<void> {
   try {
-    const amount = trade.usdValue?.toLocaleString('en-US', { maximumFractionDigits: 0 }) || "0";
+    const amount = trade.usdValue?.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) || "0";
+    const price = (trade.price * 100).toFixed(0); // Convert to cents
 
-    // Use username if available and looks real, otherwise fallback to wallet
-    let profileIdentifier = trade.proxyWallet; // Default to wallet
+    // Get outcome emoji
+    const outcomeEmoji = trade.outcome?.toLowerCase() === 'yes' ? '✅' : '❌';
+    const outcomeName = trade.outcome || 'Unknown';
 
-    if (trade.name && !trade.name.startsWith('0x') && trade.name.length < 40 && trade.name.length > 0) {
-      profileIdentifier = trade.name;
-    }
+    // Profile URL with wallet address
+    const profileUrl = `https://polymarket.com/profile/${trade.proxyWallet}?ref=${REFERRAL}`;
 
-    const profileUrl = `https://polymarket.com/@${profileIdentifier}?via=${REFERRAL}`;
+    const tweet = `🐋 Whale trade spotted on @Polymarket
 
-    // Get outcome (YES/NO) if available
-    const outcome = trade.outcome ? ` on ${trade.outcome.toUpperCase()}` : '';
+💰 $${amount} on ${outcomeEmoji} ${outcomeName} @ ${price}¢
+📊 Market: ${trade.title}
 
-    const tweet = `🐋 WHALE ALERT
-
-💰 $${amount} bet${outcome}
-📊 ${trade.title}
-
-Big money moving!
-
-👤 ${profileUrl}`;
+🔗 ${profileUrl}`;
 
     await twitter.v2.tweet(tweet);
-    logger.info(`✅ Posted whale tweet: $${amount} - Profile: @${profileIdentifier}`);
+    logger.info(`✅ Posted whale tweet: $${amount} on ${outcomeName}`);
   } catch (err: any) {
     logger.error("Failed to post whale tweet:", err.message);
   }
