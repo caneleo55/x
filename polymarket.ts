@@ -83,11 +83,18 @@ export function shouldFilterMarket(marketTitle: string): boolean {
     return true;
   }
 
-  // Check crypto - use word boundaries for short tokens to avoid false positives
-  // (e.g., "ada" shouldn't match "Adams", "sol" shouldn't match "console")
-  const cryptoPattern = /\b(btc|eth|sol|ada|doge)\b|bitcoin|ethereum|solana|cardano|dogecoin|shiba|crypto|price.*\$\d+|hit.*\$\d+|reach.*\$\d+|above.*\$\d+|up or down/i;
+  // Check crypto - improved to avoid false positives on stock/finance markets
+  // Crypto tickers (word boundary safe): btc, eth, sol, ada, doge
+  const hasCryptoTicker = /\b(btc|eth|sol|ada|doge)\b/i.test(lower);
 
-  if (cryptoPattern.test(marketTitle)) {
+  // Crypto names: bitcoin, ethereum, solana, cardano, dogecoin, shiba, crypto
+  const hasCryptoName = /(bitcoin|ethereum|solana|cardano|dogecoin|shiba|crypto)/i.test(lower);
+
+  // "up or down" pattern (common in crypto day trading)
+  const hasUpOrDown = /up or down/i.test(lower);
+
+  // Filter if has crypto ticker, name, or day trading pattern
+  if (hasCryptoTicker || hasCryptoName || hasUpOrDown) {
     totalFiltered++;
     logger.debug(`🚫 Filtered (crypto): ${marketTitle}`);
     return true;
