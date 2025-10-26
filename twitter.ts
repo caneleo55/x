@@ -19,7 +19,13 @@ const twitter = client.readWrite;
 export async function postInsiderTrade(trade: Trade): Promise<void> {
   try {
     const amount = trade.usdValue?.toFixed(0) || "0";
-    const referralUrl = `https://polymarket.com/?via=${REFERRAL}`;
+
+    // Use username if available and looks real, otherwise fallback to wallet
+    const profileIdentifier = trade.name && !trade.name.startsWith('0x') && trade.name.length < 40
+      ? trade.name
+      : trade.proxyWallet;
+
+    const profileUrl = `https://polymarket.com/@${profileIdentifier}?via=${REFERRAL}`;
 
     const tweet = `🚨 FRESH WALLET ALERT
 
@@ -28,7 +34,7 @@ export async function postInsiderTrade(trade: Trade): Promise<void> {
 
 First-time trader detected!
 
-👤 ${referralUrl}`;
+👤 ${profileUrl}`;
 
     await twitter.v2.tweet(tweet);
     logger.info(`✅ Posted insider tweet: $${amount}`);
@@ -40,7 +46,13 @@ First-time trader detected!
 export async function postWhaleAlert(trade: Trade): Promise<void> {
   try {
     const amount = trade.usdValue?.toFixed(0) || "0";
-    const referralUrl = `https://polymarket.com/?via=${REFERRAL}`;
+
+    // Use username if available and looks real, otherwise fallback to wallet
+    const profileIdentifier = trade.name && !trade.name.startsWith('0x') && trade.name.length < 40
+      ? trade.name
+      : trade.proxyWallet;
+
+    const profileUrl = `https://polymarket.com/@${profileIdentifier}?via=${REFERRAL}`;
 
     const tweet = `🐋 WHALE ALERT
 
@@ -49,7 +61,7 @@ export async function postWhaleAlert(trade: Trade): Promise<void> {
 
 Big money moving!
 
-👤 ${referralUrl}`;
+👤 ${profileUrl}`;
 
     await twitter.v2.tweet(tweet);
     logger.info(`✅ Posted whale tweet: $${amount}`);

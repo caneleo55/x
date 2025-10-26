@@ -16,6 +16,8 @@ export interface Trade {
   slug: string;
   eventSlug: string;
   transactionHash: string;
+  name?: string;
+  pseudonym?: string;
   usdValue?: number;
   marketUrl?: string;
 }
