@@ -23,10 +23,95 @@ export interface Trade {
 }
 
 const SPORTS_KEYWORDS = [
-  "nfl", "nba", "mlb", "nhl", "ufc", "boxing", "soccer", "football",
-  "basketball", "baseball", "hockey", "tennis", "golf", "cricket",
-  "super bowl", "world series", "stanley cup", "playoffs", "championship",
-  " vs ", " vs. ", "game", "match", "tournament", "league", "team", "player", "score"
+  // NFL & American Football
+  "super bowl", "super-bowl", "superbowl", "49ers", "bears", "bengals", "bills", "broncos", "browns",
+  "buccaneers", "bucs", "chargers", "chiefs", "colts", "commanders", "cowboys", "dolphins", "falcons",
+  "jaguars", "jags", "jets", "lions", "packers", "panthers", "patriots", "pats", "raiders", "rams",
+  "ravens", "saints", "seahawks", "steelers", "texans", "titans", "vikings", "cfb", "college-football",
+  "ncaa-football", "nfl",
+
+  // NBA & Basketball
+  "nba", "wnba", "euroleague", "76ers", "sixers", "bucks", "bulls", "cavaliers", "cavs", "celtics",
+  "clippers", "grizzlies", "hornets", "jazz", "knicks", "lakers", "magic", "mavericks", "mavs", "nets",
+  "nuggets", "pacers", "pelicans", "pistons", "blazers", "trail-blazers", "raptors", "rockets",
+  "spurs", "suns", "thunder", "timberwolves", "wolves", "warriors", "wizards", "lebron", "curry",
+  "durant", "giannis", "jokic", "embiid", "luka", "doncic", "tatum", "booker", "harden",
+  "college-basketball", "march-madness",
+
+  // MLB & Baseball
+  "mlb", "world-series", "world series", "angels", "astros", "athletics", "orioles", "red-sox", "white-sox", "cubs",
+  "reds", "guardians", "royals", "brewers", "twins", "yankees", "mets", "phillies", "pirates", "padres",
+  "mariners", "rays", "rangers", "blue-jays", "braves", "marlins", "diamondbacks", "rockies",
+  "dodgers", "nationals",
+
+  // NHL & Hockey
+  "nhl", "stanley-cup", "stanley cup", "avalanche", "blackhawks", "blue-jackets", "blues", "bruins", "canadiens",
+  "canucks", "capitals", "flames", "flyers", "golden-knights", "hurricanes", "islanders",
+  "lightning", "maple-leafs", "leafs", "oilers", "penguins", "predators", "red-wings", "sabres",
+  "sharks", "kraken", "ducks", "wild",
+
+  // Soccer - Leagues
+  "soccer", "football", "fifa", "uefa", "epl", "premier-league", "la-liga", "laliga", "bundesliga",
+  "ligue-1", "serie-a", "mls", "ucl", "champions-league", "europa-league", "uel", "world-cup",
+  "european-championship", "a-league", "fa-cup", "efl-cup", "efl-championship",
+
+  // Premier League Teams
+  "arsenal", "arsenal fc", "aston-villa", "aston villa", "bournemouth", "brentford", "brighton",
+  "chelsea", "chelsea fc", "crystal-palace", "crystal palace", "everton", "fulham", "leeds",
+  "leicester", "liverpool", "liverpool fc", "man-city", "manchester-city", "manchester city",
+  "manchester city fc", "man-utd", "man-united", "manchester-united", "manchester united",
+  "manchester united fc", "newcastle", "newcastle united", "nottingham-forest",
+  "nottingham forest", "southampton", "tottenham", "west-ham", "west ham",
+
+  // La Liga Teams
+  "athletic-bilbao", "athletic bilbao", "atletico", "atletico-madrid", "atletico madrid",
+  "barcelona", "barcelona fc", "barca", "fc barcelona", "betis", "real-madrid", "real madrid",
+  "real madrid fc", "real-sociedad", "sevilla", "sevilla fc", "valencia", "valencia cf", "villarreal",
+
+  // Bundesliga Teams
+  "bayern", "bayern-munich", "bayern munich", "fc bayern", "dortmund", "borussia dortmund",
+  "leipzig", "rb leipzig", "leverkusen", "bayer leverkusen", "frankfurt", "wolfsburg",
+
+  // Serie A Teams
+  "atalanta", "inter-milan", "inter milan", "fc inter", "juventus", "juventus fc", "lazio",
+  "ac-milan", "ac milan", "napoli", "ssc napoli", "roma", "as roma",
+
+  // Ligue 1 Teams
+  "psg", "paris-saint-germain", "paris saint germain", "marseille", "monaco", "lyon", "lille", "lens", "nice",
+
+  // Other Major Soccer Teams
+  "ajax", "benfica", "celtic", "porto", "sporting", "rangers", "psv", "feyenoord",
+  "galatasaray", "fenerbahce", "besiktas",
+
+  // Soccer Stars
+  "messi", "ronaldo", "mbappe", "haaland", "neymar", "lewandowski", "salah", "benzema", "modric",
+  "kane", "son", "de-bruyne",
+
+  // Tennis
+  "tennis", "atp", "wta", "wimbledon", "french-open", "us-open", "australian-open", "djokovic",
+  "nadal", "federer", "alcaraz",
+
+  // Golf
+  "golf", "pga", "lpga", "ryder-cup",
+
+  // Combat Sports
+  "mma", "ufc", "bellator", "boxing", "mcgregor", "mayweather", "tyson", "fury", "jake-paul",
+
+  // Motorsports
+  "formula-1", "f1", "nascar", "motogp", "indycar", "grand-prix",
+
+  // Esports
+  "esports", "e-sports", "counter-strike", "csgo", "cs:go", "cs2",
+  "league-of-legends", "lol", "dota", "dota-2", "valorant", "overwatch", "rocket-league",
+  "fortnite", "apex-legends", "cod", "call-of-duty", "pubg",
+
+  // Other Sports
+  "olympics", "cricket", "rugby", "wrestling", "wwe", "cycling", "tour-de-france",
+
+  // Generic Sports Terms
+  " vs ", " vs. ", "game", "match", "tournament", "playoff", "playoffs", "semifinal",
+  "quarterfinal", "finals", "championship", "league", "team", "player", "score",
+  "spread", "moneyline", "over/under", "point spread"
 ];
 
 let pollCount = 0;
