@@ -173,11 +173,11 @@ export function shouldFilterMarket(marketTitle: string): boolean {
   }
 
   // Check crypto - improved to avoid false positives on stock/finance markets
-  // Crypto tickers (word boundary safe): btc, eth, sol, ada, doge
-  const hasCryptoTicker = /\b(btc|eth|sol|ada|doge)\b/i.test(lower);
+  // Crypto tickers (word boundary safe): major cryptocurrencies
+  const hasCryptoTicker = /\b(btc|eth|sol|ada|doge|xrp|bnb|usdt|usdc|avax|matic|dot|link|uni|atom|ltc|etc|xlm|trx|shib|dai|wbtc|leo|okb|cro|qnt|ape|sand|mana|axs|gala|ens)\b/i.test(lower);
 
-  // Crypto names: bitcoin, ethereum, solana, cardano, dogecoin, shiba, crypto
-  const hasCryptoName = /(bitcoin|ethereum|solana|cardano|dogecoin|shiba|crypto)/i.test(lower);
+  // Crypto names: bitcoin, ethereum, solana, cardano, dogecoin, shiba, crypto, ripple, binance, polygon, avalanche, polkadot, chainlink, uniswap, cosmos, litecoin, tether, tron, stellar
+  const hasCryptoName = /(bitcoin|ethereum|solana|cardano|dogecoin|shiba|crypto|ripple|binance|polygon|avalanche|polkadot|chainlink|uniswap|cosmos|litecoin|tether|tron|stellar|cryptocurrency)/i.test(lower);
 
   // "up or down" pattern (common in crypto day trading)
   const hasUpOrDown = /up or down/i.test(lower);
