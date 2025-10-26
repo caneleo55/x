@@ -21,9 +21,11 @@ export async function postInsiderTrade(trade: Trade): Promise<void> {
     const amount = trade.usdValue?.toFixed(0) || "0";
 
     // Use username if available and looks real, otherwise fallback to wallet
-    const profileIdentifier = trade.name && !trade.name.startsWith('0x') && trade.name.length < 40
-      ? trade.name
-      : trade.proxyWallet;
+    let profileIdentifier = trade.proxyWallet; // Default to wallet
+
+    if (trade.name && !trade.name.startsWith('0x') && trade.name.length < 40 && trade.name.length > 0) {
+      profileIdentifier = trade.name;
+    }
 
     const profileUrl = `https://polymarket.com/@${profileIdentifier}?via=${REFERRAL}`;
 
@@ -37,7 +39,7 @@ First-time trader detected!
 👤 ${profileUrl}`;
 
     await twitter.v2.tweet(tweet);
-    logger.info(`✅ Posted insider tweet: $${amount}`);
+    logger.info(`✅ Posted insider tweet: $${amount} - Profile: @${profileIdentifier}`);
   } catch (err: any) {
     logger.error("Failed to post insider tweet:", err.message);
   }
@@ -48,9 +50,11 @@ export async function postWhaleAlert(trade: Trade): Promise<void> {
     const amount = trade.usdValue?.toFixed(0) || "0";
 
     // Use username if available and looks real, otherwise fallback to wallet
-    const profileIdentifier = trade.name && !trade.name.startsWith('0x') && trade.name.length < 40
-      ? trade.name
-      : trade.proxyWallet;
+    let profileIdentifier = trade.proxyWallet; // Default to wallet
+
+    if (trade.name && !trade.name.startsWith('0x') && trade.name.length < 40 && trade.name.length > 0) {
+      profileIdentifier = trade.name;
+    }
 
     const profileUrl = `https://polymarket.com/@${profileIdentifier}?via=${REFERRAL}`;
 
@@ -64,7 +68,7 @@ Big money moving!
 👤 ${profileUrl}`;
 
     await twitter.v2.tweet(tweet);
-    logger.info(`✅ Posted whale tweet: $${amount}`);
+    logger.info(`✅ Posted whale tweet: $${amount} - Profile: @${profileIdentifier}`);
   } catch (err: any) {
     logger.error("Failed to post whale tweet:", err.message);
   }
