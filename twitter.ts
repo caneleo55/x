@@ -5,7 +5,7 @@ import { TwitterApi } from "twitter-api-v2";
 import { Trade } from "./polymarket.js";
 import { logger } from "./logger.js";
 
-const REFERRAL = process.env.REFERRAL_CODE || "caneleo";
+const REFERRAL = process.env.REFERRAL_CODE || "polyinsider";
 
 const client = new TwitterApi({
   appKey: process.env.TWITTER_API_KEY!,
