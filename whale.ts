@@ -48,15 +48,15 @@ export async function processWhaleTrade(trade: Trade): Promise<string> {
   }
 
   // Post tweet
-  await postWhaleAlert(trade);
+  const success = await postWhaleAlert(trade);
 
-  // Increment rate limits
+  // Increment rate limits even if tweet failed (to prevent retry spam)
   await incrementRateLimits(trade.proxyWallet, trade.eventSlug);
 
   // Mark as processed
   await redis.setex(dedupeKey, 48 * 3600, "1");
 
-  return "tweeted";
+  return success ? "tweeted" : "tweet_failed";
 }
 
 async function canPostWhale(wallet: string, market: string): Promise<boolean> {

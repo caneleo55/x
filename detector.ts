@@ -51,13 +51,13 @@ export async function processFreshWallet(trade: Trade): Promise<string> {
   // FRESH WALLET CONFIRMED - TWEET!
   logger.info(`✅ FRESH WALLET: ${trade.proxyWallet} ($${trade.usdValue.toFixed(0)}) - ${trade.title}`);
 
-  await postInsiderTrade(trade);
+  const success = await postInsiderTrade(trade);
 
-  // Mark as posted forever
+  // Mark as posted even if tweet failed (to prevent retry spam)
   await redis.set(`posted-wallet:${trade.proxyWallet}`, "1");
 
   // Mark transaction as processed
   await redis.setex(dedupeKey, 48 * 3600, "1");
 
-  return "tweeted";
+  return success ? "tweeted" : "tweet_failed";
 }

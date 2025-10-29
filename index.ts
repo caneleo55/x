@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import { RealTimeDataClient } from "@polymarket/real-time-data-client";
 import { processFreshWallet } from "./detector.js";
 import { processWhaleTrade } from "./whale.js";
+import { getFailedTweetStats } from "./twitter.js";
 import { logger } from "./logger.js";
 
 dotenv.config();
@@ -78,6 +79,9 @@ async function processTrade(trade: Trade) {
   if (freshResult === "tweeted") {
     insiderTweetsPosted++;
     cumulativeInsiderTweets++;
+  } else if (freshResult === "tweet_failed") {
+    // Failed tweets are tracked in twitter.ts
+    // Don't increment success counter
   } else if (freshResult === "has_history") {
     rejectedHistory++;
     cumulativeRejectedHistory++;
@@ -94,6 +98,9 @@ async function processTrade(trade: Trade) {
   if (whaleResult === "tweeted") {
     whaleTweetsPosted++;
     cumulativeWhaleTweets++;
+  } else if (whaleResult === "tweet_failed") {
+    // Failed tweets are tracked in twitter.ts
+    // Don't increment success counter
   } else if (whaleResult === "filtered") {
     rejectedFiltered++;
     cumulativeRejectedFiltered++;
@@ -146,17 +153,21 @@ async function summaryLoop() {
     const totalRejected = rejectedHistory + rejectedFiltered + rejectedBelowThreshold;
     const cumulativeTotalRejected = cumulativeRejectedHistory + cumulativeRejectedFiltered + cumulativeRejectedBelowThreshold;
 
+    // Get failed tweet stats
+    const failedStats = getFailedTweetStats();
+
     logger.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     logger.info(`📊 SUMMARY (Last 15s)`);
-    logger.info(`   📈 Trades This Period: ${totalTradesScanned}`);
-    logger.info(`   📈 TOTAL Since Startup: ${cumulativeTradesScanned}`);
+    logger.info(`   📈 Trades Received: ${totalTradesScanned} (Total: ${cumulativeTradesScanned})`);
     logger.info(`   🛒 BUY Orders: ${totalBuyOrders} (Total: ${cumulativeBuyOrders})`);
     logger.info(`   ❌ Rejected: ${totalRejected} (Total: ${cumulativeTotalRejected})`);
     logger.info(`      └─ Has History: ${rejectedHistory} (Total: ${cumulativeRejectedHistory})`);
     logger.info(`      └─ Filtered: ${rejectedFiltered} (Total: ${cumulativeRejectedFiltered})`);
     logger.info(`      └─ Below Threshold: ${rejectedBelowThreshold} (Total: ${cumulativeRejectedBelowThreshold})`);
-    logger.info(`   🚨 Insider Tweets: ${insiderTweetsPosted} (Total: ${cumulativeInsiderTweets})`);
-    logger.info(`   🐋 Whale Tweets: ${whaleTweetsPosted} (Total: ${cumulativeWhaleTweets})`);
+    logger.info(`   ✅ Insider Tweets Sent: ${insiderTweetsPosted} (Total: ${cumulativeInsiderTweets})`);
+    logger.info(`   ✅ Whale Tweets Sent: ${whaleTweetsPosted} (Total: ${cumulativeWhaleTweets})`);
+    logger.info(`   ❌ Failed Insider Tweets: ${failedStats.failedInsider}`);
+    logger.info(`   ❌ Failed Whale Tweets: ${failedStats.failedWhale}`);
     logger.info(`   ⚡ Avg Processing: ${avgProcessingTime}ms per trade`);
     logger.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
@@ -175,8 +186,13 @@ async function summaryLoop() {
 
 // Graceful shutdown
 process.on("SIGINT", () => {
+  const failedStats = getFailedTweetStats();
   logger.info("🛑 Shutting down...");
-  logger.info(`📊 Final Stats: ${cumulativeTradesScanned} trades scanned, ${cumulativeInsiderTweets} insider tweets, ${cumulativeWhaleTweets} whale tweets`);
+  logger.info(`📊 Final Stats:`);
+  logger.info(`   📈 Trades: ${cumulativeTradesScanned}`);
+  logger.info(`   ✅ Insider Tweets: ${cumulativeInsiderTweets}`);
+  logger.info(`   ✅ Whale Tweets: ${cumulativeWhaleTweets}`);
+  logger.info(`   ❌ Failed Tweets: ${failedStats.totalFailed} (${failedStats.failedInsider} insider, ${failedStats.failedWhale} whale)`);
   isRunning = false;
   if (wsClient) {
     wsClient.disconnect();
@@ -185,8 +201,13 @@ process.on("SIGINT", () => {
 });
 
 process.on("SIGTERM", () => {
+  const failedStats = getFailedTweetStats();
   logger.info("🛑 Shutting down...");
-  logger.info(`📊 Final Stats: ${cumulativeTradesScanned} trades scanned, ${cumulativeInsiderTweets} insider tweets, ${cumulativeWhaleTweets} whale tweets`);
+  logger.info(`📊 Final Stats:`);
+  logger.info(`   📈 Trades: ${cumulativeTradesScanned}`);
+  logger.info(`   ✅ Insider Tweets: ${cumulativeInsiderTweets}`);
+  logger.info(`   ✅ Whale Tweets: ${cumulativeWhaleTweets}`);
+  logger.info(`   ❌ Failed Tweets: ${failedStats.totalFailed} (${failedStats.failedInsider} insider, ${failedStats.failedWhale} whale)`);
   isRunning = false;
   if (wsClient) {
     wsClient.disconnect();

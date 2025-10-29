@@ -16,7 +16,19 @@ const client = new TwitterApi({
 
 const twitter = client.readWrite;
 
-export async function postInsiderTrade(trade: Trade): Promise<void> {
+// Track failures
+let failedInsiderTweets = 0;
+let failedWhaleTweets = 0;
+
+export function getFailedTweetStats() {
+  return {
+    failedInsider: failedInsiderTweets,
+    failedWhale: failedWhaleTweets,
+    totalFailed: failedInsiderTweets + failedWhaleTweets
+  };
+}
+
+export async function postInsiderTrade(trade: Trade): Promise<boolean> {
   try {
     const amount = trade.usdValue?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || "0.00";
     const price = (trade.price * 100).toFixed(0); // Convert to cents
@@ -37,12 +49,15 @@ export async function postInsiderTrade(trade: Trade): Promise<void> {
 
     await twitter.v2.tweet(tweet);
     logger.info(`✅ Posted insider tweet: $${amount} on ${outcomeName}`);
+    return true;
   } catch (err: any) {
-    logger.error("Failed to post insider tweet:", err.message);
+    failedInsiderTweets++;
+    logger.error(`❌ Failed to post insider tweet: ${err.message} (Total failed: ${failedInsiderTweets})`);
+    return false;
   }
 }
 
-export async function postWhaleAlert(trade: Trade): Promise<void> {
+export async function postWhaleAlert(trade: Trade): Promise<boolean> {
   try {
     const amount = trade.usdValue?.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) || "0";
     const price = (trade.price * 100).toFixed(0); // Convert to cents
@@ -63,7 +78,10 @@ export async function postWhaleAlert(trade: Trade): Promise<void> {
 
     await twitter.v2.tweet(tweet);
     logger.info(`✅ Posted whale tweet: $${amount} on ${outcomeName}`);
+    return true;
   } catch (err: any) {
-    logger.error("Failed to post whale tweet:", err.message);
+    failedWhaleTweets++;
+    logger.error(`❌ Failed to post whale tweet: ${err.message} (Total failed: ${failedWhaleTweets})`);
+    return false;
   }
 }
